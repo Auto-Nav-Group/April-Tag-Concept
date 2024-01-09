@@ -48,7 +48,6 @@ public class AutoAlign extends CommandBase {
         } else if (targetHeading < -Math.PI) {
             targetHeading += 2 * Math.PI;
         }
-        targetPose = new Pose2d(targetPose.getTranslation(), targetPose.getRotation().plus(Rotation2d.fromRadians(targetHeading)));
         double angularError = targetHeading - currentPose.getRotation().getDegrees();
         double linearError = m_limelight.getDistance() - currentPose.getTranslation().getNorm();
         double angularErrorDelta = angularError - m_lastAngularError;
@@ -60,5 +59,7 @@ public class AutoAlign extends CommandBase {
         m_lastAngularError = angularError;
         m_lastLinearError = linearError;
         // Make the drivetrain drive towards the target
+        Translation2d translation = new Translation2d(linearCommand, 0.0d);
+        m_drivetrain.drive(translation, angularCommand, false, true);
     }
 }
