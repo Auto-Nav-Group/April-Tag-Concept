@@ -1,5 +1,9 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
@@ -17,8 +21,11 @@ public class LimelightInterface extends SubsystemBase {
 
     private double distanceToGoal; // in inches
     private int targetCount; // ensure target being identified correctly x amount of times before complete
+    private SwerveDrivePoseEstimator estimator;
 
-    public LimelightInterface() {
+    public LimelightInterface(SwerveDrivePoseEstimator estimator) {
+        this.estimator = estimator;
+
         tv = 0.0d;
         tx = 0.0d;
         ty = 0.0d;
@@ -67,5 +74,14 @@ public class LimelightInterface extends SubsystemBase {
 
     public boolean isAligned() {
         return hasTarget() && Math.abs(tx) <= VISION_ANGLE_TOLERANCE && targetCount >= 7;
+    }
+
+    public Pose2d getTargetPose() {
+        Pose2d robotPose = estimator.getEstimatedPosition(); // field space
+        Pose2d targetPose = LimelightHelpers.getTargetPose3d_RobotSpace(LIMELIGHT_NAME).toPose2d(); // robot space
+
+        Translation2d targetTranslation = targetPose.getTranslation();
+        Transform2d targetTransform = new Transform2d(targetTranslation, targetPose.getRotation());
+        return robotPose.plus(targetTransform); // field space
     }
 }
