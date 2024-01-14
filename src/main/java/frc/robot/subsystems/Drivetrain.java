@@ -48,7 +48,7 @@ public class Drivetrain extends SubsystemBase {
 
     private double m_velocitySetPointLeft = 0.0d;
     private double m_velocitySetPointRight = 0.0d;
-    private double m_velocityLimitDelta = 700.0d;
+    private double m_velocityLimitDelta = 10000.0d;
 
     public static final double VELOCITY_KF = 0.046d;
     public static final double VELOCITY_KP = 0.03d;
